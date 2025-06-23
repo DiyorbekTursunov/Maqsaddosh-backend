@@ -14,7 +14,8 @@
   "scripts": {
     "dev": "nodemon src/index.ts",
     "generate": "npx prisma generate",
-    "pushdb": "npx prisma db push"
+    "pushdb": "npx prisma db push",
+    "start": "node src/index.js"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
