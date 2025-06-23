@@ -15,7 +15,7 @@
     "dev": "nodemon src/index.ts",
     "generate": "npx prisma generate",
     "pushdb": "npx prisma db push",
-    "build": "tsc",
+    "build": "tsc --project tsconfig.json",
     "start": "node dist/index.js"
   },
   "devDependencies": {

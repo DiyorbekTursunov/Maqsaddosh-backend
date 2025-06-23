@@ -109,6 +109,14 @@
         "strict": true,
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
-        "skipLibCheck": true
-    }
+        "skipLibCheck": true,
+        "outDir": "dist"
+    },
+    "include": [
+        "src/**/*"
+    ], // Include all .ts files in 'src/'
+    "exclude": [
+        "node_modules",
+        "dist"
+    ] // Exclude these directories
 }
