@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id          String            @id @default(cuid())
+    email       String            @unique
+    password    String?
+    fullName    String // To'liq ism
+    googleId    String?           @unique // Google OAuth ID
+    telegramId  String?           @unique // Telegram ID
+    avatar      String? // User profile picture URL
+    verified    Boolean           @default(false) // Email or account verification status
+    createdAt   DateTime          @default(now())
+    updatedAt   DateTime          @updatedAt
+    goals       Goal[] // Goals created by the user
+    joinedGoals GoalParticipant[] // Goals the user has joined
+
+    @@index([email]) // Improve lookup performance for email
+}
+
+model Goal {
+    id           String            @id @default(cuid())
+    name         String // Maqsad nomi
+    description  String? // Izoh qoldirish
+    direction    String // Yo'nalish tanlang
+    subDirection String? // Ichki yo'nalish
+    duration     Int // 7, 14, 21, or 28 days
+    visibility   GoalVisibility // Ommaviy, Shaxsy
+    phone        String // Telefon raqam kiriting
+    telegram     String // Telegram user kiriting
+    status       GoalStatus        @default(ACTIVE)
+    startDate    DateTime          @default(now())
+    endDate      DateTime
+    creatorId    String
+    creator      User              @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+    participants GoalParticipant[]
+    createdAt    DateTime          @default(now())
+    updatedAt    DateTime          @updatedAt
+
+    @@index([creatorId]) // Improve lookup performance for creatorId
+    @@map("goals")
+}
+
+model GoalParticipant {
+    id        String          @id @default(cuid())
+    userId    String
+    user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+    goalId    String
+    goal      Goal            @relation(fields: [goalId], references: [id], onDelete: Cascade)
+    role      ParticipantRole @default(PARTICIPANT) // Changed from status to role
+    avatar    String? // User profile picture URL
+    joinedAt  DateTime        @default(now())
+    createdAt DateTime        @default(now())
+    updatedAt DateTime        @updatedAt
+
+    @@unique([userId, goalId]) // Prevent duplicate participation
+    @@index([userId, goalId]) // Improve lookup performance
+    @@map("goal_participants")
+}
+
+enum GoalVisibility {
+    PUBLIC // Ommaviy
+    PRIVATE // Shaxsy
+}
+
+enum GoalStatus {
+    ACTIVE
+    COMPLETED
+    CANCELLED
+}
+
+enum ParticipantRole {
+    PARTICIPANT // Ishtirokchi
+    ADMIN // Administrator (for future use)
+    REMOVED // O'chirilgan
+}
