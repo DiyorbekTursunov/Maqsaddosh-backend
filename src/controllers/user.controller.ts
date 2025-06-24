@@ -46,7 +46,7 @@ export async function googleAuth(req: Request, res: Response): Promise<void> {
     const payload = await userService.exchangeGoogleCode(code as string);
     const user = await userService.findOrCreateGoogleUser(payload);
     const token = userService.generateToken(user);
-    res.redirect(`http://localhost:5173/?token=${token}`);
+    res.redirect(`https://maqsaddosh-website.vercel.app/?token=${token}`);
   } catch (error) {
     res.status(400).json({ success: false, error: (error as Error).message });
   }
@@ -79,7 +79,7 @@ export async function telegramAuth(req: Request, res: Response): Promise<void> {
       username,
     });
     const token = userService.generateToken(user);
-    res.redirect(`http://localhost:5500/telegram-signin-test.html?token=${token}`);
+    res.redirect(`https://maqsaddosh-website.vercel.app/telegram-signin-test.html?token=${token}`);
   } catch (error) {
     res.status(400).json({ success: false, error: (error as Error).message });
   }

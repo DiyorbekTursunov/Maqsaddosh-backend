@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 const client = new OAuth2Client({
   clientId: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  redirectUri: 'http://localhost:3000/api/google',
+  redirectUri: 'https://maqsaddosh-website.vercel.app/api/google',
 });
 
 export async function createUser(email: string, password: string, fullName: string) {
@@ -63,7 +63,7 @@ export async function updateUser(id: string, data: { fullName?: string; email?: 
 export async function exchangeGoogleCode(code: string): Promise<TokenPayload> {
   const { tokens } = await client.getToken({
     code,
-    redirect_uri: 'http://localhost:3000/api/google',
+    redirect_uri: 'https://maqsaddosh-website.vercel.app/api/google',
   });
   const ticket = await client.verifyIdToken({
     idToken: tokens.id_token!,
