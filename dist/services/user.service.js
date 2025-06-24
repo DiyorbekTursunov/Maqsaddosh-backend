@@ -31,7 +31,7 @@ const prisma = new client_1.PrismaClient();
 const client = new google_auth_library_1.OAuth2Client({
     clientId: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    redirectUri: 'https://maqsaddosh-website.vercel.app/api/google',
+    redirectUri: 'https://maqsaddosh-backend-o2af.onrender.com/api/google',
 });
 function createUser(email, password, fullName) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -90,7 +90,7 @@ function exchangeGoogleCode(code) {
     return __awaiter(this, void 0, void 0, function* () {
         const { tokens } = yield client.getToken({
             code,
-            redirect_uri: 'https://maqsaddosh-website.vercel.app/api/google',
+            redirect_uri: 'https://maqsaddosh-backend-o2af.onrender.com/api/google',
         });
         const ticket = yield client.verifyIdToken({
             idToken: tokens.id_token,
