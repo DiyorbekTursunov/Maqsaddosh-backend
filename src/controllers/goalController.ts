@@ -20,12 +20,10 @@ export const createGoal = async (req: Request, res: Response) => {
     const userId = req.user?.id;
 
     if (!userId) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: "Foydalanuvchi autentifikatsiyadan o'tmagan",
-        });
+      return res.status(401).json({
+        success: false,
+        message: "Foydalanuvchi autentifikatsiyadan o'tmagan",
+      });
     }
 
     if (
@@ -100,12 +98,10 @@ export const getGoals = async (req: Request, res: Response) => {
     const userId = req.user?.id;
 
     if (!userId) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: "Foydalanuvchi autentifikatsiyadan o'tmagan",
-        });
+      return res.status(401).json({
+        success: false,
+        message: "Foydalanuvchi autentifikatsiyadan o'tmagan",
+      });
     }
 
     const goals = await prisma.goal.findMany({
@@ -125,17 +121,16 @@ export const getGoals = async (req: Request, res: Response) => {
 
 // Get a single goal by ID
 export const getGoalById = async (req: Request, res: Response) => {
+  console.log("ishladi 1");
   try {
     const { id } = req.params;
     const userId = req.user?.id;
 
     if (!userId) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: "Foydalanuvchi autentifikatsiyadan o'tmagan",
-        });
+      return res.status(401).json({
+        success: false,
+        message: "Foydalanuvchi autentifikatsiyadan o'tmagan",
+      });
     }
 
     const goal = await prisma.goal.findUnique({
@@ -162,6 +157,7 @@ export const getGoalById = async (req: Request, res: Response) => {
 
 // Update a goal
 export const updateGoal = async (req: Request, res: Response) => {
+  console.log("ishladi 2");
   try {
     const { id } = req.params;
     const {
@@ -180,12 +176,10 @@ export const updateGoal = async (req: Request, res: Response) => {
     const userId = req.user?.id;
 
     if (!userId) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: "Foydalanuvchi autentifikatsiyadan o'tmagan",
-        });
+      return res.status(401).json({
+        success: false,
+        message: "Foydalanuvchi autentifikatsiyadan o'tmagan",
+      });
     }
 
     const goal = await prisma.goal.findUnique({ where: { id } });
@@ -265,17 +259,16 @@ export const updateGoal = async (req: Request, res: Response) => {
 
 // Delete a goal
 export const deleteGoal = async (req: Request, res: Response) => {
+  console.log("ishladi 3");
   try {
     const { id } = req.params;
     const userId = req.user?.id;
 
     if (!userId) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: "Foydalanuvchi autentifikatsiyadan o'tmagan",
-        });
+      return res.status(401).json({
+        success: false,
+        message: "Foydalanuvchi autentifikatsiyadan o'tmagan",
+      });
     }
 
     const goal = await prisma.goal.findUnique({ where: { id } });
@@ -309,6 +302,7 @@ export const deleteGoal = async (req: Request, res: Response) => {
 
 // Join a goal
 export const joinGoal = async (req: Request, res: Response) => {
+  console.log("ishladi 4");
   try {
     const { id } = req.params; // Goal ID
     const userId = req.user?.id;
@@ -321,12 +315,10 @@ export const joinGoal = async (req: Request, res: Response) => {
     }
 
     if (!userId) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: "Foydalanuvchi autentifikatsiyadan o'tmagan",
-        });
+      return res.status(401).json({
+        success: false,
+        message: "Foydalanuvchi autentifikatsiyadan o'tmagan",
+      });
     }
 
     const goal = await prisma.goal.findUnique({
@@ -341,23 +333,19 @@ export const joinGoal = async (req: Request, res: Response) => {
     }
 
     if (goal.visibility === "PRIVATE") {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: "Shaxsiy maqsadga qo'shilish mumkin emas",
-        });
+      return res.status(403).json({
+        success: false,
+        message: "Shaxsiy maqsadga qo'shilish mumkin emas",
+      });
     }
 
     if (
       goal.participants.some((participant) => participant.userId === userId)
     ) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Foydalanuvchi allaqachon qo'shilgan",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Foydalanuvchi allaqachon qo'shilgan",
+      });
     }
 
     if (goal.creatorId === userId) {
@@ -397,12 +385,10 @@ export const getJoinedGoals = async (req: Request, res: Response) => {
     const userId = req.user?.id;
 
     if (!userId) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: "Foydalanuvchi autentifikatsiyadan o'tmagan",
-        });
+      return res.status(401).json({
+        success: false,
+        message: "Foydalanuvchi autentifikatsiyadan o'tmagan",
+      });
     }
 
     const joinedGoals = await prisma.goal.findMany({
@@ -468,38 +454,31 @@ export const getPublicGoals = async (req: Request, res: Response) => {
     });
   }
 };
-
-
 // Search public goals
 export const searchPublicGoals = async (req: Request, res: Response) => {
+ 
   try {
-    const searchTerm = req.query.q as string
+    const searchTerm = req.query.q as string;
 
+    // Validate input
     if (!searchTerm || typeof searchTerm !== "string" || searchTerm.trim() === "") {
       return res.status(400).json({
         success: false,
         message: "Iltimos, qidiruv so'rovini kiriting.",
-      })
+      });
     }
+
+    // Sanitize searchTerm to avoid unexpected behavior
+    const sanitizedSearchTerm = searchTerm.trim();
 
     const goals = await prisma.goal.findMany({
       where: {
         visibility: "PUBLIC", // Only search public goals
-        status: "ACTIVE", // Only search active goals
-        OR: [
-          {
-            name: {
-              contains: searchTerm,
-              mode: "insensitive", // Case-insensitive search
-            },
-          },
-          {
-            description: {
-              contains: searchTerm,
-              mode: "insensitive",
-            },
-          },
-        ],
+        status: "ACTIVE",     // Only search active goals
+        name: {
+          contains: sanitizedSearchTerm,
+          mode: "insensitive", // Case-insensitive search
+        },
       },
       include: {
         creator: {
@@ -519,23 +498,23 @@ export const searchPublicGoals = async (req: Request, res: Response) => {
       orderBy: {
         createdAt: "desc",
       },
-    })
+    });
 
     if (goals.length === 0) {
       return res.status(200).json({
         success: true,
         data: [],
-        message: `"${searchTerm}" uchun natija topilmadi.`,
-      })
+        message: `"${sanitizedSearchTerm}" uchun natija topilmadi.`,
+      });
     }
 
-    res.status(200).json({ success: true, data: goals })
+    res.status(200).json({ success: true, data: goals });
   } catch (error: any) {
-    console.error("Error searching goals:", error)
+    console.error("Error searching goals:", error);
     res.status(500).json({
       success: false,
       message: "Maqsadlarni qidirishda xatolik yuz berdi.",
       error: error.message,
-    })
+    });
   }
-}
+};

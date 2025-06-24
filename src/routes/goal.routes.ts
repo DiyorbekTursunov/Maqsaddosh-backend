@@ -79,7 +79,7 @@ router.get(
   }
 );
 
-router.get("/goals/search", (req: Request, res: Response, next: NextFunction) => {
+router.get("/goals", (req: Request, res: Response, next: NextFunction) => {
   searchPublicGoals(req, res).catch(next)
 })
 
