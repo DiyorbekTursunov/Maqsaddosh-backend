@@ -21,9 +21,7 @@ const createGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         duration, visibility, phone, telegram, endDate, } = req.body;
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
         if (!userId) {
-            return res
-                .status(401)
-                .json({
+            return res.status(401).json({
                 success: false,
                 message: "Foydalanuvchi autentifikatsiyadan o'tmagan",
             });
@@ -94,9 +92,7 @@ const getGoals = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
         if (!userId) {
-            return res
-                .status(401)
-                .json({
+            return res.status(401).json({
                 success: false,
                 message: "Foydalanuvchi autentifikatsiyadan o'tmagan",
             });
@@ -119,13 +115,12 @@ exports.getGoals = getGoals;
 // Get a single goal by ID
 const getGoalById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
+    console.log("ishladi 1");
     try {
         const { id } = req.params;
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
         if (!userId) {
-            return res
-                .status(401)
-                .json({
+            return res.status(401).json({
                 success: false,
                 message: "Foydalanuvchi autentifikatsiyadan o'tmagan",
             });
@@ -154,14 +149,13 @@ exports.getGoalById = getGoalById;
 // Update a goal
 const updateGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
+    console.log("ishladi 2");
     try {
         const { id } = req.params;
         const { name, description, direction, subDirection, duration, visibility, phone, telegram, startDate, endDate, status, } = req.body;
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
         if (!userId) {
-            return res
-                .status(401)
-                .json({
+            return res.status(401).json({
                 success: false,
                 message: "Foydalanuvchi autentifikatsiyadan o'tmagan",
             });
@@ -237,13 +231,12 @@ exports.updateGoal = updateGoal;
 // Delete a goal
 const deleteGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
+    console.log("ishladi 3");
     try {
         const { id } = req.params;
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
         if (!userId) {
-            return res
-                .status(401)
-                .json({
+            return res.status(401).json({
                 success: false,
                 message: "Foydalanuvchi autentifikatsiyadan o'tmagan",
             });
@@ -278,6 +271,7 @@ exports.deleteGoal = deleteGoal;
 // Join a goal
 const joinGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
+    console.log("ishladi 4");
     try {
         const { id } = req.params; // Goal ID
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
@@ -288,9 +282,7 @@ const joinGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 .json({ success: false, message: "Foydalanuvchi topilmadi" });
         }
         if (!userId) {
-            return res
-                .status(401)
-                .json({
+            return res.status(401).json({
                 success: false,
                 message: "Foydalanuvchi autentifikatsiyadan o'tmagan",
             });
@@ -305,17 +297,13 @@ const joinGoal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 .json({ success: false, message: "Maqsad topilmadi" });
         }
         if (goal.visibility === "PRIVATE") {
-            return res
-                .status(403)
-                .json({
+            return res.status(403).json({
                 success: false,
                 message: "Shaxsiy maqsadga qo'shilish mumkin emas",
             });
         }
         if (goal.participants.some((participant) => participant.userId === userId)) {
-            return res
-                .status(400)
-                .json({
+            return res.status(400).json({
                 success: false,
                 message: "Foydalanuvchi allaqachon qo'shilgan",
             });
@@ -356,9 +344,7 @@ const getJoinedGoals = (req, res) => __awaiter(void 0, void 0, void 0, function*
     try {
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
         if (!userId) {
-            return res
-                .status(401)
-                .json({
+            return res.status(401).json({
                 success: false,
                 message: "Foydalanuvchi autentifikatsiyadan o'tmagan",
             });
@@ -429,30 +415,23 @@ exports.getPublicGoals = getPublicGoals;
 const searchPublicGoals = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const searchTerm = req.query.q;
+        // Validate input
         if (!searchTerm || typeof searchTerm !== "string" || searchTerm.trim() === "") {
             return res.status(400).json({
                 success: false,
                 message: "Iltimos, qidiruv so'rovini kiriting.",
             });
         }
+        // Sanitize searchTerm to avoid unexpected behavior
+        const sanitizedSearchTerm = searchTerm.trim();
         const goals = yield prisma.goal.findMany({
             where: {
                 visibility: "PUBLIC", // Only search public goals
                 status: "ACTIVE", // Only search active goals
-                OR: [
-                    {
-                        name: {
-                            contains: searchTerm,
-                            mode: "insensitive", // Case-insensitive search
-                        },
-                    },
-                    {
-                        description: {
-                            contains: searchTerm,
-                            mode: "insensitive",
-                        },
-                    },
-                ],
+                name: {
+                    contains: sanitizedSearchTerm,
+                    mode: "insensitive", // Case-insensitive search
+                },
             },
             include: {
                 creator: {
@@ -477,7 +456,7 @@ const searchPublicGoals = (req, res) => __awaiter(void 0, void 0, void 0, functi
             return res.status(200).json({
                 success: true,
                 data: [],
-                message: `"${searchTerm}" uchun natija topilmadi.`,
+                message: `"${sanitizedSearchTerm}" uchun natija topilmadi.`,
             });
         }
         res.status(200).json({ success: true, data: goals });

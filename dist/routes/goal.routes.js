@@ -29,7 +29,7 @@ router.post("/goals/:id/join", auth_middleware_1.authenticate, (req, res, next) 
 router.get("/goals/joined", auth_middleware_1.authenticate, (req, res, next) => {
     (0, goalController_1.getJoinedGoals)(req, res).catch(next);
 });
-router.get("/goals/search", (req, res, next) => {
+router.get("/goals", (req, res, next) => {
     (0, goalController_1.searchPublicGoals)(req, res).catch(next);
 });
 exports.default = router;
