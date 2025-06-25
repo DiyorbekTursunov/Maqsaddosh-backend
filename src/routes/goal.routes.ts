@@ -3,7 +3,8 @@ import { authenticate } from "../middleware/auth.middleware";
 import {
   createGoal,
   getGoals,
-  getGoalById, // Import getGoalById
+  getMyGoals, // NEW: Import the new getMyGoals function
+  getGoalById,
   getPublicGoals,
   updateGoal,
   deleteGoal,
@@ -14,73 +15,82 @@ import {
 
 const router = Router();
 
-// CRUD routes for goals (all protected by authentication)
-router.post(
-  "/goals",
-  authenticate,
-  (req: Request, res: Response, next: NextFunction) => {
-    createGoal(req, res).catch(next);
-  }
-);
+// Utility function to handle async route handlers
+const asyncHandler = (fn: Function) => (req: Request, res: Response, next: NextFunction) => {
+  Promise.resolve(fn(req, res, next)).catch(next);
+};
 
+// IMPORTANT: More specific routes should come before more general ones
+// to avoid route conflicts
+
+// Search public goals - needs to be before /goals/public
 router.get(
-  "/goals",
+  "/goals/search",
   authenticate,
-  (req: Request, res: Response, next: NextFunction) => {
-    getGoals(req, res).catch(next);
-  }
+  asyncHandler(searchPublicGoals)
 );
 
+// Get public goals
 router.get(
   "/goals/public",
   authenticate,
-  (req: Request, res: Response, next: NextFunction) => {
-    getPublicGoals(req, res).catch(next);
-  }
+  asyncHandler(getPublicGoals)
 );
 
-router.get(
-  "/goals/:id",
-  authenticate,
-  (req: Request, res: Response, next: NextFunction) => {
-    getGoalById(req, res).catch(next);
-  }
-);
-
-router.put(
-  "/goals/:id",
-  authenticate,
-  (req: Request, res: Response, next: NextFunction) => {
-    updateGoal(req, res).catch(next);
-  }
-);
-
-router.delete(
-  "/goals/:id",
-  authenticate,
-  (req: Request, res: Response, next: NextFunction) => {
-    deleteGoal(req, res).catch(next);
-  }
-);
-
-router.post(
-  "/goals/:id/join",
-  authenticate,
-  (req: Request, res: Response, next: NextFunction) => {
-    joinGoal(req, res).catch(next);
-  }
-);
-
+// Get joined goals
 router.get(
   "/goals/joined",
   authenticate,
-  (req: Request, res: Response, next: NextFunction) => {
-    getJoinedGoals(req, res).catch(next);
-  }
+  asyncHandler(getJoinedGoals)
 );
 
-router.get("/goals", (req: Request, res: Response, next: NextFunction) => {
-  searchPublicGoals(req, res).catch(next)
-})
+// NEW: Get goals created by the authenticated user
+router.get(
+  "/goals/my",
+  authenticate,
+  asyncHandler(getMyGoals)
+);
+
+// Create a new goal
+router.post(
+  "/goals",
+  authenticate,
+  asyncHandler(createGoal)
+);
+
+// Get all goals (admin/general listing)
+router.get(
+  "/goals",
+  authenticate,
+  asyncHandler(getGoals)
+);
+
+// Join a specific goal
+router.post(
+  "/goals/:id/join",
+  authenticate,
+  asyncHandler(joinGoal)
+);
+
+// Get a specific goal by ID
+router.get(
+  "/goals/:id",
+  authenticate,
+  asyncHandler(getGoalById)
+);
+
+// Update a specific goal
+router.put(
+  "/goals/:id",
+  authenticate,
+  asyncHandler(updateGoal)
+);
+
+// Delete a specific goal
+router.delete(
+  "/goals/:id",
+  authenticate,
+  asyncHandler(deleteGoal)
+);
 
 export default router;
